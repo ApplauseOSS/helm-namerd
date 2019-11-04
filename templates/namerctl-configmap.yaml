@@ -1,0 +1,22 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: namerctl-script
+  namespace: infra
+data:
+  createNs.sh: |-
+    #!/bin/sh
+    set -e
+    if namerctl dtab get default > /dev/null 2>&1; then
+      echo "default namespace already exists"
+    else
+      echo "
+      /host       => /#/io.l5d.marathon;
+      /k8s        => /#/io.l5d.k8s;
+      /portNsSvc  => /#/portNsSvcToK8s;
+      /host       => /portNsSvc/http/keycloak;
+      /host       => /portNsSvc/http;
+      /svc        => /$/io.buoyant.http.domainToPathPfx/host;
+      " | namerctl dtab create default -
+    fi

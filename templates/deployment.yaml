@@ -1,0 +1,54 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: namerd
+  namespace: infra
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: namerd
+  template:
+    metadata:
+{{- if .Values.podAnnotations }}
+      annotations:
+{{ toYaml .Values.podAnnotations | indent 8 }}
+{{- end }}
+labels:
+  app: namerd
+spec:
+  dnsPolicy: ClusterFirst
+  volumes:
+    - name: namerd-config
+      configMap:
+        name: namerd-config
+  containers:
+    - name: namerd
+      image: buoyantio/namerd:1.7.0
+      command:
+        - "taskset"
+        - "--cpu-list"
+        - "0"
+        - "./bundle-exec"
+        - "/io.buoyant/namerd/config/config.yml"
+        - "-log.level=INFO"
+      ports:
+        - name: thrift
+          containerPort: 4100
+        - name: http
+          containerPort: 4180
+        - name: mesh
+          containerPort: 4321
+        - name: admin
+          containerPort: 9991
+      volumeMounts:
+        - name: "namerd-config"
+          mountPath: "/io.buoyant/namerd/config"
+          readOnly: true
+    - name: kubectl
+      image: buoyantio/kubectl:v1.14.3
+      args:
+        - "proxy"
+        - "-p"
+        - "8001"

@@ -1,0 +1,41 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: namerd-config
+  namespace: infra
+data:
+  config.yml: |-
+    admin:
+      ip: 0.0.0.0
+      port: 9991
+    namers:
+    - kind: io.l5d.k8s
+      host: localhost
+      port: 8001
+    - kind: io.l5d.rewrite
+      prefix: /portNsSvcToK8s
+      pattern: "/{port}/{ns}/{svc}"
+      name: "/k8s/{ns}/{port}/{svc}"
+    - kind: io.l5d.marathon
+      prefix: /io.l5d.marathon
+      host: {{ .Values.configMap.namers.host }}
+      port: 8080
+      useHealthCheck: true
+    telemetry:
+    - kind: io.l5d.prometheus
+    storage:
+      kind: io.l5d.k8s
+      host: localhost
+      port: 8001
+      namespace: infra
+    interfaces:
+    - kind: io.l5d.thriftNameInterpreter
+      ip: 0.0.0.0
+      port: 4100
+    - kind: io.l5d.httpController
+      ip: 0.0.0.0
+      port: 4180
+    - kind: io.l5d.mesh
+      ip: 0.0.0.0
+      port: 4321
