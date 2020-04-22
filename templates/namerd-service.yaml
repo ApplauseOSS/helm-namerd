@@ -2,12 +2,22 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: namerd-admin
+  name: namerd
   namespace: infra
+{{- if .Values.namerd.service.annotations }}
+  annotations:
+{{ toYaml .Values.namerd.service.annotations | indent 4 }}
+{{- end }}
 spec:
   selector:
     app: namerd
-  type: LoadBalancer
+  type: {{ .Values.namerd.service.type }}
   ports:
-  - name: admin
-    port: 9991
+    - name: thrift
+      port: 4100
+    - name: http
+      port: 4180
+    - name: mesh
+      port: 4321
+    - name: admin
+      port: 9991

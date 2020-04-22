@@ -5,35 +5,36 @@ metadata:
   name: namerd
   namespace: infra
 spec:
-  replicas: 3
+  replicas: {{ .Values.namerd.replicas }}
   selector:
     matchLabels:
       app: namerd
   template:
     metadata:
-{{- if .Values.podAnnotations }}
+{{- if .Values.namerd.podAnnotations }}
       annotations:
-{{ toYaml .Values.podAnnotations | indent 8 }}
+{{ toYaml .Values.namerd.podAnnotations | indent 8 }}
 {{- end }}
-labels:
-  app: namerd
-spec:
-  dnsPolicy: ClusterFirst
-  volumes:
-    - name: namerd-config
-      configMap:
-        name: namerd-config
-  containers:
-    - name: namerd
-      image: buoyantio/namerd:1.7.0
-      command:
+      labels:
+        app: namerd
+    spec:
+      dnsPolicy: ClusterFirst
+      volumes:
+      - name: namerd-config
+        configMap:
+          name: namerd-config
+      containers:
+      - name: namerd
+        image: {{ .Values.namerd.image.repo }}:{{ .Values.namerd.image.tag }}
+        imagePullPolicy: {{ .Values.namerd.image.pullPolicy }}
+        command:
         - "taskset"
         - "--cpu-list"
         - "0"
         - "./bundle-exec"
         - "/io.buoyant/namerd/config/config.yml"
         - "-log.level=INFO"
-      ports:
+        ports:
         - name: thrift
           containerPort: 4100
         - name: http
@@ -42,13 +43,29 @@ spec:
           containerPort: 4321
         - name: admin
           containerPort: 9991
-      volumeMounts:
+        resources:
+          limits:
+            memory: "512Mi"
+          requests:
+            memory: "512Mi"
+        livenessProbe:
+          httpGet:
+            path: "/admin"
+            port: 9991
+          initialDelaySeconds: 10
+          periodSeconds: 5
+        volumeMounts:
         - name: "namerd-config"
           mountPath: "/io.buoyant/namerd/config"
           readOnly: true
-    - name: kubectl
-      image: buoyantio/kubectl:v1.14.3
-      args:
+      - name: kubectl
+        image: buoyantio/kubectl:v1.14.3
+        args:
         - "proxy"
         - "-p"
         - "8001"
+        resources:
+          limits:
+            memory: "20Mi"
+          requests:
+            memory: "20Mi"
