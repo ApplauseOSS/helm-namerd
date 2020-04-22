@@ -1,3 +1,13 @@
-configMap:
-  namers:
-    host: 127.0.0.1
+namerd:
+  configMap:
+    namers:
+      host: 127.0.0.1
+  image:
+    repo: buoyantio/namerd
+    tag: '1.7.0'
+    pullPolicy: Always
+  podAnnotations: {}
+  replicas: 3
+  service:
+    annotations: {}
+    type: ClusterIP

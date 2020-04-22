@@ -9,6 +9,7 @@ data:
     admin:
       ip: 0.0.0.0
       port: 9991
+
     namers:
     - kind: io.l5d.k8s
       host: localhost
@@ -19,16 +20,19 @@ data:
       name: "/k8s/{ns}/{port}/{svc}"
     - kind: io.l5d.marathon
       prefix: /io.l5d.marathon
-      host: {{ .Values.configMap.namers.host }}
+      host: {{ .Values.namerd.configMap.namers.host }}
       port: 8080
       useHealthCheck: true
+
     telemetry:
     - kind: io.l5d.prometheus
+
     storage:
       kind: io.l5d.k8s
       host: localhost
       port: 8001
       namespace: infra
+
     interfaces:
     - kind: io.l5d.thriftNameInterpreter
       ip: 0.0.0.0

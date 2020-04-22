@@ -10,20 +10,20 @@ spec:
       name: namerctl
     spec:
       volumes:
-        - name: namerctl-script
-          configMap:
-            name: namerctl-script
-            defaultMode: 0755
+      - name: namerctl-script
+        configMap:
+          name: namerctl-script
+          defaultMode: 0755
       containers:
-        - name: namerctl
-          image: linkerd/namerctl:0.8.6
-          env:
-            - name: NAMERCTL_BASE_URL
-              value: http://namerd.infra.svc.cluster.local:4180
-          command:
-            - "/namerctl/createNs.sh"
-          volumeMounts:
-            - name: "namerctl-script"
-              mountPath: "/namerctl"
-              readOnly: true
+      - name: namerctl
+        image: linkerd/namerctl:0.8.6
+        env:
+        - name: NAMERCTL_BASE_URL
+          value: http://namerd.infra.svc.cluster.local:4180
+        command:
+        - "/namerctl/createNs.sh"
+        volumeMounts:
+        - name: "namerctl-script"
+          mountPath: "/namerctl"
+          readOnly: true
       restartPolicy: OnFailure
