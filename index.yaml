@@ -3,11 +3,11 @@ entries:
   helm-namerd:
   - apiVersion: v1
     appVersion: 1.7.0
-    created: "2020-04-22T16:22:25.925898-04:00"
+    created: "2020-04-23T11:40:44.617023-04:00"
     description: Service that manages routing for multiple linkerd instances
-    digest: afe47ee22285078185f9f0087f108d818d72a790196f4dddfa8cbb363e651469
+    digest: 862ff1fc9e6d67784197ee2042cd153ff5dbb84b7e52522abc163c5899b20bab
     name: helm-namerd
     urls:
     - https://applauseoss.github.io/helm-namerd/helm-namerd-0.1.0.tgz
     version: 0.1.0
-generated: "2020-04-22T16:22:25.916458-04:00"
+generated: "2020-04-23T11:40:44.612757-04:00"
